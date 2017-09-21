@@ -16,7 +16,7 @@ setup(
     version='0.1.0',
     description=(
         "A library for handling the encrypted keyfiles used to store ethereum "
-        "private keys"
+        "private keys."
     ),
     long_description_markdown_filename='README.md',
     author='Piper Merriam',
