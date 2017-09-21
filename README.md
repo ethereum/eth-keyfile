@@ -1,6 +1,5 @@
 # Ethereum Keyfile
 
-
 A library for handling the encrypted keyfiles used to store ethereum private keys
 
 
