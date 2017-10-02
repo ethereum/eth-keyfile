@@ -8,6 +8,8 @@ from Crypto.Protocol.KDF import scrypt
 from Crypto.Util import Counter
 
 
+from eth_keys import keys
+
 from eth_utils import (
     big_endian_to_int,
     decode_hex,
@@ -105,7 +107,10 @@ def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None):
     ciphertext = encrypt_aes_ctr(private_key, encrypt_key, iv)
     mac = keccak(derived_key[16:32] + ciphertext)
 
+    address = keys.PrivateKey(private_key).public_key.to_address()
+
     return {
+        'address': remove_0x_prefix(address),
         'crypto': {
             'cipher': 'aes-128-ctr',
             'cipherparams': {
