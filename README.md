@@ -56,6 +56,7 @@ Returns the keyfile json as a python dictionary.
 >>> private_key = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
 >>> create_keyfile_json(private_key, b'foo')
 {
+    "address" : "1a642f0e3c3af545e7acbd38b07251b3990914f1",
     "crypto" : {
         "cipher" : "aes-128-ctr",
         "cipherparams" : {

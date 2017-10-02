@@ -32,3 +32,13 @@ def test_scrypt_keyfile_creation():
     )
     derived_private_key = decode_keyfile_json(keyfile_json, PASSWORD)
     assert derived_private_key == PRIVATE_KEY
+
+
+def test_scrypt_keyfile_address():
+    keyfile_json = create_keyfile_json(
+        PRIVATE_KEY,
+        password=PASSWORD,
+        kdf='scrypt',
+        iterations=2,
+    )
+    assert keyfile_json['address'] == '008aeeda4d805471df9b2a5b0f38a0c3bcba786b'

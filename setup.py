@@ -25,6 +25,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "ethereum-utils>=0.4.0",
+        "ethereum-keys>=0.1.0-alpha.7",
         "cytoolz>=0.8.2",
         "pycryptodome>=3.4.7",
     ],
