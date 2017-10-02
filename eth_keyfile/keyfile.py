@@ -9,13 +9,18 @@ from Crypto.Util import Counter
 
 
 from eth_utils import (
+    big_endian_to_int,
     decode_hex,
     encode_hex,
-    keccak,
-    big_endian_to_int,
     int_to_big_endian,
     is_string,
+    keccak,
+    remove_0x_prefix,
 )
+
+
+def encode_hex_no_prefix(value):
+    return remove_0x_prefix(encode_hex(value))
 
 
 def load_keyfile(path_or_file_obj):
@@ -74,7 +79,7 @@ def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None):
             'c': work_factor,
             'dklen': DKLEN,
             'prf': 'hmac-sha256',
-            'salt': encode_hex(salt),
+            'salt': encode_hex_no_prefix(salt),
         }
     elif kdf == 'scrypt':
         derived_key = _scrypt_hash(
@@ -90,7 +95,7 @@ def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None):
             'n': work_factor,
             'r': SCRYPT_R,
             'p': SCRYPT_P,
-            'salt': encode_hex(salt),
+            'salt': encode_hex_no_prefix(salt),
         }
     else:
         raise NotImplementedError("KDF not implemented: {0}".format(kdf))
@@ -104,12 +109,12 @@ def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None):
         'crypto': {
             'cipher': 'aes-128-ctr',
             'cipherparams': {
-                'iv': encode_hex(int_to_big_endian(iv)),
+                'iv': encode_hex_no_prefix(int_to_big_endian(iv)),
             },
-            'ciphertext': encode_hex(ciphertext),
+            'ciphertext': encode_hex_no_prefix(ciphertext),
             'kdf': kdf,
             'kdfparams': kdfparams,
-            'mac': encode_hex(mac),
+            'mac': encode_hex_no_prefix(mac),
         },
         'id': str(uuid.uuid4()),
         'version': 3,
