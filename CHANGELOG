@@ -1,3 +1,9 @@
+0.2.0
+-----
+
+- Remove `0x` prefixes from hex values in generated json.
+
+
 0.1.0
 -----
 

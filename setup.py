@@ -13,7 +13,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 
 setup(
     name='ethereum-keyfile',
-    version='0.1.0',
+    version='0.2.0',
     description=(
         "A library for handling the encrypted keyfiles used to store ethereum "
         "private keys."
