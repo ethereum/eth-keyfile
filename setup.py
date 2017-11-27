@@ -26,7 +26,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "eth-utils>=0.5.0",
-        "eth-keys>=0.1.0-beta.1",
+        "eth-keys>=0.1.0-beta.2",
         "cytoolz>=0.8.2",
         "pycryptodome>=3.4.7",
     ],
