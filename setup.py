@@ -12,7 +12,8 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 setup(
-    name='ethereum-keyfile',
+    name='eth-keyfile',
+    # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
     version='0.3.0',
     description=(
         "A library for handling the encrypted keyfiles used to store ethereum "
@@ -21,11 +22,11 @@ setup(
     long_description_markdown_filename='README.md',
     author='Piper Merriam',
     author_email='pipermerriam@gmail.com',
-    url='https://github.com/pipermerriam/ethereum-keyfile',
+    url='https://github.com/ethereum/eth-keyfile',
     include_package_data=True,
     install_requires=[
-        "ethereum-utils>=0.4.0",
-        "ethereum-keys>=0.1.0-alpha.7",
+        "eth-utils>=0.5.0",
+        "eth-keys>=0.1.0-beta.3",
         "cytoolz>=0.8.2",
         "pycryptodome>=3.4.7",
     ],
