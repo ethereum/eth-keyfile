@@ -1,3 +1,10 @@
+0.4.0
+-----
+
+- Rename repo and module to `eth-keyfile`
+- Added deprecation warning for python 2
+
+
 0.3.0
 -----
 
