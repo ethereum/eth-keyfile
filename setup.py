@@ -14,7 +14,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 setup(
     name='eth-keyfile',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='0.4.0',
+    version='0.4.1',
     description=(
         "A library for handling the encrypted keyfiles used to store ethereum "
         "private keys."
