@@ -25,7 +25,7 @@ setup(
     url='https://github.com/ethereum/eth-keyfile',
     include_package_data=True,
     install_requires=[
-        "eth-utils>=0.7.3,<1.0.0",
+        "eth-utils>=1.0.0-beta.1,<2.0.0",
         "eth-keys>=0.1.0-beta.4,<1.0.0",
         "cytoolz>=0.9.0,<1.0.0",
         "pycryptodome>=3.4.7,<4.0.0",
