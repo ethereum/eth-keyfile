@@ -7,7 +7,6 @@ from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import scrypt
 from Crypto.Util import Counter
 
-
 from eth_keys import keys
 
 from eth_utils import (
@@ -130,7 +129,7 @@ def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None):
 # Verson 3 decoder
 #
 def _decode_keyfile_json_v3(keyfile_json, password):
-    crypto = keyfile_json['crypto']
+    crypto = keyfile_json.get('Crypto') or keyfile_json['crypto']
     kdf = crypto['kdf']
 
     # Derive the encryption key from the password using the key derivation
