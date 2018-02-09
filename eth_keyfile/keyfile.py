@@ -7,7 +7,6 @@ from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import scrypt
 from Crypto.Util import Counter
 
-
 from eth_keys import keys
 
 from eth_utils import (
@@ -15,9 +14,11 @@ from eth_utils import (
     decode_hex,
     encode_hex,
     int_to_big_endian,
+    is_dict,
     is_string,
     keccak,
     remove_0x_prefix,
+    to_dict,
 )
 
 
@@ -40,7 +41,8 @@ def create_keyfile_json(private_key, password, version=3, kdf="pbkdf2", iteratio
         raise NotImplementedError("Not yet implemented")
 
 
-def decode_keyfile_json(keyfile_json, password):
+def decode_keyfile_json(raw_keyfile_json, password):
+    keyfile_json = normalize_keys(raw_keyfile_json)
     version = keyfile_json['version']
 
     if version == 3:
@@ -53,6 +55,22 @@ def extract_key_from_keyfile(path_or_file_obj, password):
     keyfile_json = load_keyfile(path_or_file_obj)
     private_key = decode_keyfile_json(keyfile_json, password)
     return private_key
+
+
+@to_dict
+def normalize_keys(keyfile_json):
+    for key, value in keyfile_json.items():
+        if is_string(key):
+            norm_key = key.lower()
+        else:
+            norm_key = key
+
+        if is_dict(value):
+            norm_value = normalize_keys(value)
+        else:
+            norm_value = value
+
+        yield norm_key, norm_value
 
 
 #
