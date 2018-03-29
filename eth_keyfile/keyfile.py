@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 import json
 import uuid
 
@@ -166,7 +167,7 @@ def _decode_keyfile_json_v3(keyfile_json, password):
 
     expected_mac = decode_hex(crypto['mac'])
 
-    if mac != expected_mac:
+    if not hmac.compare_digest(mac, expected_mac):
         raise ValueError("MAC mismatch")
 
     # Decrypt the ciphertext using the derived encryption key to get the
