@@ -1,5 +1,7 @@
 # Ethereum Keyfile
 
+[![Build Status](https://travis-ci.org/ethereum/eth-keyfile.svg?branch=master)](https://travis-ci.org/ethereum/eth-keyfile)
+
 A library for handling the encrypted keyfiles used to store ethereum private keys
 
 
