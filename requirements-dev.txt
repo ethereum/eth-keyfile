@@ -1,4 +1,0 @@
-pytest>=3.2.2
-tox>=1.8.0
-flake8>=3.0.4
-bumpversion==0.5.3
