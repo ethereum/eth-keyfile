@@ -10,7 +10,7 @@ from setuptools import (
 deps = {
     'keyfile': [
         "eth-utils>=1.3.0,<2",
-        "eth-keys>=0.2.1,<0.3.0",
+        "eth-keys>=0.2.1,<0.4.0",
         "pycryptodome>=3.6.6,<4",
     ],
     'test': [
