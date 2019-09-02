@@ -83,7 +83,7 @@ SCRYPT_P = 8
 
 
 def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None):
-    salt = Random.get_random_bytes(16)
+    salt = Random.get_random_bytes(32)
 
     if work_factor is None:
         work_factor = get_default_work_factor_for_kdf(kdf)
