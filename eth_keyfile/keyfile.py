@@ -35,9 +35,11 @@ def load_keyfile(path_or_file_obj):
         return json.load(path_or_file_obj)
 
 
-def create_keyfile_json(private_key, password, version=3, kdf="pbkdf2", iterations=None, salt_size=16):
+def create_keyfile_json(private_key, password, version=3, kdf="pbkdf2",
+        iterations=None, salt_size=16):
     if version == 3:
-        return _create_v3_keyfile_json(private_key, password, kdf, iterations, salt_size)
+        return _create_v3_keyfile_json(private_key, password, kdf,
+            iterations, salt_size)
     else:
         raise NotImplementedError("Not yet implemented")
 
@@ -82,7 +84,8 @@ SCRYPT_R = 1
 SCRYPT_P = 8
 
 
-def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None, salt_size=16):
+def _create_v3_keyfile_json(private_key, password, kdf,work_factor=None,
+        salt_size=16):
     salt = Random.get_random_bytes(salt_size)
 
     if work_factor is None:
