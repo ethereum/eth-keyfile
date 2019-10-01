@@ -23,6 +23,19 @@ def test_pbkdf2_keyfile_creation():
     assert derived_private_key == PRIVATE_KEY
 
 
+def test_pbkdf2_keyfile_salt32_creation():
+    keyfile_json = create_keyfile_json(
+        PRIVATE_KEY,
+        password=PASSWORD,
+        kdf='pbkdf2',
+        iterations=1,
+        salt_size=32,
+    )
+    assert len(keyfile_json['crypto']['kdfparams']['salt']) == 32 * 2
+    derived_private_key = decode_keyfile_json(keyfile_json, PASSWORD)
+    assert derived_private_key == PRIVATE_KEY
+
+
 def test_scrypt_keyfile_creation():
     keyfile_json = create_keyfile_json(
         PRIVATE_KEY,
