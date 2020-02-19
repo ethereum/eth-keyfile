@@ -140,7 +140,7 @@ def _create_v3_keyfile_json(private_key, password, kdf,
         'crypto': {
             'cipher': 'aes-128-ctr',
             'cipherparams': {
-                'iv': encode_hex_no_prefix(int_to_big_endian(iv)),
+                'iv': encode_hex_no_prefix(int_to_big_endian(iv)).zfill(32),
             },
             'ciphertext': encode_hex_no_prefix(ciphertext),
             'kdf': kdf,
