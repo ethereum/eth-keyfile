@@ -129,6 +129,7 @@ def _create_v3_keyfile_json(private_key, password, kdf,
         raise NotImplementedError("KDF not implemented: {0}".format(kdf))
 
     iv = big_endian_to_int(Random.get_random_bytes(16))
+    iv = iv.zfill(16)
     encrypt_key = derived_key[:16]
     ciphertext = encrypt_aes_ctr(private_key, encrypt_key, iv)
     mac = keccak(derived_key[16:32] + ciphertext)
