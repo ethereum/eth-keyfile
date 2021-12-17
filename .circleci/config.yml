@@ -50,12 +50,6 @@ common: &common
         key: cache-v1-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.py" }}-{{ checksum "tox.ini" }}
 
 jobs:
-  py35-core:
-    <<: *common
-    docker:
-      - image: circleci/python:3.5
-        environment:
-          TOXENV: py35-core
   py36-core:
     <<: *common
     docker:
@@ -63,12 +57,6 @@ jobs:
         environment:
           TOXENV: py36-core
 
-  py35-lint:
-    <<: *common
-    docker:
-      - image: circleci/python:3.5
-        environment:
-          TOXENV: py35-lint
   py36-lint:
     <<: *common
     docker:
@@ -81,8 +69,6 @@ workflows:
   version: 2
   test:
     jobs:
-      - py35-core
       - py36-core
 
-      - py35-lint
       - py36-lint
