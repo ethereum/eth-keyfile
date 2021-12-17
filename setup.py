@@ -17,7 +17,7 @@ deps = {
         "pytest>=6.2.5,<7",
     ],
     'lint': [
-        "flake8==3.5.0",
+        "flake8==4.0.1",
     ],
     'dev': [
         "bumpversion>=0.5.3,<1",
@@ -72,5 +72,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 )
