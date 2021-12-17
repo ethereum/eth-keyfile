@@ -9,12 +9,12 @@ from setuptools import (
 
 deps = {
     'keyfile': [
-        "eth-utils>=1.3.0,<2",
-        "eth-keys>=0.2.1,<0.3.0",
+        "eth-utils>=2,<3",
+        "eth-keys>=0.4.0,<0.5.0",
         "pycryptodome>=3.6.6,<4",
     ],
     'test': [
-        "pytest>=3.6,<3.7",
+        "pytest>=6.2.5,<7",
     ],
     'lint': [
         "flake8==3.5.0",
@@ -23,8 +23,7 @@ deps = {
         "bumpversion>=0.5.3,<1",
         "wheel",
         "setuptools>=36.2.0",
-        # Fixing this dependency due to: pytest 3.6.4 has requirement pluggy<0.8,>=0.5, but you'll have pluggy 0.8.0 which is incompatible.
-        "pluggy==0.7.1",
+        "pluggy>=1.0.0,<2",
         # Fixing this dependency due to: requests 2.20.1 has requirement idna<2.8,>=2.5, but you'll have idna 2.8 which is incompatible.
         "idna==2.7",
         # idna 2.7 is not supported by requests 2.18
