@@ -1,3 +1,14 @@
+0.6.0
+-----
+
+- Mitigate timing attack (https://github.com/ethereum/eth-keyfile/pull/13)
+- Fix typo in README (https://github.com/ethereum/eth-keyfile/pull/14)
+- Migrate to CircleCI (https://github.com/ethereum/eth-keyfile/pull/22)
+- Allow salt size specification on keyfile creation
+(https://github.com/ethereum/eth-keyfile/pull/25)
+- Drop Python 3.5 and 3.6 support, Add Python 3.8-3.10 support and update corresponding dependencies (https://github.com/ethereum/eth-keyfile/pull/33)
+
+
 0.4.0
 -----
 
