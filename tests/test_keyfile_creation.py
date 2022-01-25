@@ -54,4 +54,4 @@ def test_scrypt_keyfile_address():
         kdf='scrypt',
         iterations=2,
     )
-    assert keyfile_json['address'] == '008aeeda4d805471df9b2a5b0f38a0c3bcba786b'
+    assert keyfile_json['address'] == '008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b'

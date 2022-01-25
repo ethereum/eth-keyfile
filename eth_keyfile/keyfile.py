@@ -133,7 +133,7 @@ def _create_v3_keyfile_json(private_key, password, kdf,
     ciphertext = encrypt_aes_ctr(private_key, encrypt_key, iv)
     mac = keccak(derived_key[16:32] + ciphertext)
 
-    address = keys.PrivateKey(private_key).public_key.to_address()
+    address = keys.PrivateKey(private_key).public_key.to_checksum_address()
 
     return {
         'address': remove_0x_prefix(address),
