@@ -22,7 +22,7 @@ deps = {
     'dev': [
         "bumpversion>=0.5.3,<1",
         "wheel",
-        "setuptools>=36.2.0",
+        "setuptools>=38.6.0",
         "pluggy>=1.0.0,<2",
         # Fixing this dependency due to: requests 2.20.1 has requirement idna<2.8,>=2.5, but you'll have idna 2.8 which is incompatible.
         "idna==2.7",
@@ -43,6 +43,9 @@ deps['dev'] = (
 
 install_requires = deps['keyfile']
 
+with open("./README.md") as readme:
+    long_description = readme.read()
+
 setup(
     name='eth-keyfile',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
@@ -51,14 +54,14 @@ setup(
         "A library for handling the encrypted keyfiles used to store ethereum "
         "private keys."
     ),
-    long_description_markdown_filename='README.md',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Piper Merriam',
     author_email='pipermerriam@gmail.com',
     url='https://github.com/ethereum/eth-keyfile',
     include_package_data=True,
     install_requires=install_requires,
     extras_require=deps,
-    setup_requires=['setuptools-markdown'],
     py_modules=['eth_keyfile'],
     license="MIT",
     zip_safe=False,
