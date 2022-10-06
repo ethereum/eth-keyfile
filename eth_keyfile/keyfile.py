@@ -271,6 +271,8 @@ def get_default_work_factor_for_kdf(kdf):
     if kdf == 'pbkdf2':
         return 1000000
     elif kdf == 'scrypt':
-        return 262144
+        # Per scrypt spec, this should be a power of 2 and less than 2^16 when r=1
+        # This sets it to 2^15
+        return 32768
     else:
         raise ValueError("Unsupported key derivation function: {0}".format(kdf))

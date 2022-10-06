@@ -2,6 +2,7 @@ Unreleased
 -----
 
 - removed deprecated `setuptools-markdown` dependency (https://github.com/ethereum/eth-keyfile/pull/37)
+- set default scrypt work factor to 2^15 (https://github.com/ethereum/eth-keyfile/pull/38)
 
 0.6.0
 -----
