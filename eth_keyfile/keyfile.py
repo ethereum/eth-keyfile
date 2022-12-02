@@ -84,8 +84,8 @@ def normalize_keys(keyfile_json):
 # Version 3 creators
 #
 DKLEN = 32
-SCRYPT_R = 1
-SCRYPT_P = 8
+SCRYPT_R = 8
+SCRYPT_P = 1
 
 
 def _create_v3_keyfile_json(private_key, password, kdf,
