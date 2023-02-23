@@ -1,7 +1,8 @@
-Unreleased
+0.6.1
 -----
 
-- removed deprecated `setuptools-markdown` dependency (https://github.com/ethereum/eth-keyfile/pull/37)
+- Remove deprecated `setuptools-markdown` dependency (https://github.com/ethereum/eth-keyfile/pull/37)
+- Use twine to upload package to pypi
 
 0.6.0
 -----
