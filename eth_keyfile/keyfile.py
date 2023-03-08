@@ -96,6 +96,8 @@ def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: str) -> byte
 
     if version == 3:
         return _decode_keyfile_json_v3(keyfile_json, password)
+    if version == 4:
+        return _decode_keyfile_json_v4(keyfile_json, password)
     else:
         raise NotImplementedError("Not yet implemented")
 
@@ -211,9 +213,9 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: str) -> byte
     # Derive the encryption key from the password using the key derivation
     # function.
     if kdf == "pbkdf2":
-        derived_key = _derive_pbkdf_key(crypto, password)
+        derived_key = _derive_pbkdf_key(crypto["kdfparams"], password)
     elif kdf == "scrypt":
-        derived_key = _derive_scrypt_key(crypto, password)
+        derived_key = _derive_scrypt_key(crypto["kdfparams"], password)
     else:
         raise TypeError(f"Unsupported key derivation function: {kdf}")
 
@@ -238,10 +240,42 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: str) -> byte
 
 
 #
+# Verson 4 decoder
+#
+def _decode_keyfile_json_v4(keyfile_json, password):
+    crypto = keyfile_json['crypto']
+    kdf = crypto['kdf']['function']
+
+    # Derive the encryption key from the password using the key derivation
+    # function.
+    if kdf == 'pbkdf2':
+        derived_key = _derive_pbkdf_key(crypto['kdf']['params'], password)
+    elif kdf == 'scrypt':
+        derived_key = _derive_scrypt_key(crypto['kdf']['params'], password)
+    else:
+        raise TypeError("Unsupported key derivation function: {0}".format(kdf))
+
+    cipher_message = decode_hex(crypto['cipher']['message'])
+    checksum_message = crypto['checksum']['message']
+
+    if hashlib.sha256(derived_key[16:32] + cipher_message).hexdigest() != checksum_message:
+        raise ValueError("Checksum mismatch")
+
+    # Decrypt the cipher message using the derived encryption key to get the
+    # private key.
+    encrypt_key = derived_key[:16]
+    cipherparams = crypto['cipher']['params']
+    iv = big_endian_to_int(decode_hex(cipherparams['iv']))
+
+    private_key = decrypt_aes_ctr(cipher_message, encrypt_key, iv)
+
+    return private_key
+
+
+#
 # Key derivation
 #
-def _derive_pbkdf_key(crypto: Dict[str, Any], password: str) -> bytes:
-    kdf_params = crypto["kdfparams"]
+def _derive_pbkdf_key(kdf_params: Dict[str, Any], password: str) -> bytes:
     salt = decode_hex(kdf_params["salt"])
     dklen = kdf_params["dklen"]
     should_be_hmac, _, hash_name = kdf_params["prf"].partition("-")
@@ -253,8 +287,7 @@ def _derive_pbkdf_key(crypto: Dict[str, Any], password: str) -> bytes:
     return derive_pbkdf_key
 
 
-def _derive_scrypt_key(crypto: Dict[str, Any], password: str) -> bytes:
-    kdf_params = crypto["kdfparams"]
+def _derive_scrypt_key(kdf_params: Dict[str, Any], password: str) -> bytes:
     salt = decode_hex(kdf_params["salt"])
     p = kdf_params["p"]
     r = kdf_params["r"]
