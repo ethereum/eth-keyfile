@@ -242,30 +242,33 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: str) -> byte
 #
 # Verson 4 decoder
 #
-def _decode_keyfile_json_v4(keyfile_json, password):
-    crypto = keyfile_json['crypto']
-    kdf = crypto['kdf']['function']
+def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: str) -> bytes:
+    crypto = keyfile_json["crypto"]
+    kdf = crypto["kdf"]["function"]
 
     # Derive the encryption key from the password using the key derivation
     # function.
-    if kdf == 'pbkdf2':
-        derived_key = _derive_pbkdf_key(crypto['kdf']['params'], password)
-    elif kdf == 'scrypt':
-        derived_key = _derive_scrypt_key(crypto['kdf']['params'], password)
+    if kdf == "pbkdf2":
+        derived_key = _derive_pbkdf_key(crypto["kdf"]["params"], password)
+    elif kdf == "scrypt":
+        derived_key = _derive_scrypt_key(crypto["kdf"]["params"], password)
     else:
-        raise TypeError("Unsupported key derivation function: {0}".format(kdf))
+        raise TypeError(f"Unsupported key derivation function: {kdf}")
 
-    cipher_message = decode_hex(crypto['cipher']['message'])
-    checksum_message = crypto['checksum']['message']
+    cipher_message = decode_hex(crypto["cipher"]["message"])
+    checksum_message = crypto["checksum"]["message"]
 
-    if hashlib.sha256(derived_key[16:32] + cipher_message).hexdigest() != checksum_message:
+    if (
+        hashlib.sha256(derived_key[16:32] + cipher_message).hexdigest()
+        != checksum_message
+    ):
         raise ValueError("Checksum mismatch")
 
     # Decrypt the cipher message using the derived encryption key to get the
     # private key.
     encrypt_key = derived_key[:16]
-    cipherparams = crypto['cipher']['params']
-    iv = big_endian_to_int(decode_hex(cipherparams['iv']))
+    cipherparams = crypto["cipher"]["params"]
+    iv = big_endian_to_int(decode_hex(cipherparams["iv"]))
 
     private_key = decrypt_aes_ctr(cipher_message, encrypt_key, iv)
 
