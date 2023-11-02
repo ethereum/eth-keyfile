@@ -22,14 +22,14 @@ MEW_KEYFILE = {
             "cipherparams": {
                 "iv": "7e7b02d2b4ef45d6c98cb885e75f48d5",
             },
-            "ciphertext": "a7a5743a6c7eb3fa52396bd3fd94043b79075aac3ccbae8e62d3af94db00397c",
+            "ciphertext": "a7a5743a6c7eb3fa52396bd3fd94043b79075aac3ccbae8e62d3af94db00397c",  # noqa: E501
             "kdf": "scrypt",
             "kdfparams": {
                 "dklen": 32,
                 "n": 8192,
                 "p": 1,
                 "r": 8,
-                "salt": "247797c7a357b707a3bdbfaa55f4c553756bca09fec20ddc938e7636d21e4a20",
+                "salt": "247797c7a357b707a3bdbfaa55f4c553756bca09fec20ddc938e7636d21e4a20",  # noqa: E501
             },
             "mac": "5a3ba5bebfda2c384586eda5fcda9c8397d37c9b0cc347fea86525cf2ea3a468",
         },

@@ -1,6 +1,24 @@
+from dataclasses import (
+    dataclass,
+    field,
+)
 import hashlib
 import hmac
 import json
+from typing import (
+    IO,
+    Any,
+    AnyStr,
+    Callable,
+    Dict,
+    Iterable,
+    Literal,
+    Mapping,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 import uuid
 
 from Crypto import (
@@ -18,6 +36,9 @@ from Crypto.Util import (
 from eth_keys import (
     keys,
 )
+from eth_typing import (
+    HexStr,
+)
 from eth_utils import (
     big_endian_to_int,
     decode_hex,
@@ -30,22 +51,63 @@ from eth_utils import (
     to_dict,
 )
 
+KDFType = Literal["pbkdf2", "scrypt"]
+TKey = TypeVar("TKey")
+TVal = TypeVar("TVal")
+typed_to_dict = cast(
+    Callable[
+        [Callable[..., Iterable[Union[Mapping[TKey, TVal], Tuple[TKey, TVal]]]]],
+        Callable[..., Dict[TKey, TVal]],
+    ],
+    to_dict,
+)
 
-def encode_hex_no_prefix(value):
+
+@dataclass
+class CipherParams:
+    iv: str  # Assuming iv will be a hex string
+
+
+@dataclass
+class Crypto:
+    cipher: str
+    cipherparams: CipherParams
+    ciphertext: str
+    kdf: KDFType
+    kdfparams: Dict[str, Any]  # KDF params can vary, so we use a flexible Dict here
+    mac: str
+
+
+@dataclass
+class Keyfile:
+    address: str
+    crypto: Crypto
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    version: int = 3
+
+
+def encode_hex_no_prefix(value: AnyStr) -> HexStr:
     return remove_0x_prefix(encode_hex(value))
 
 
-def load_keyfile(path_or_file_obj):
+def load_keyfile(path_or_file_obj: Union[str, IO[str]]) -> Any:
     if is_string(path_or_file_obj):
+        assert isinstance(path_or_file_obj, str)
         with open(path_or_file_obj) as keyfile_file:
             return json.load(keyfile_file)
     else:
+        assert isinstance(path_or_file_obj, IO)
         return json.load(path_or_file_obj)
 
 
 def create_keyfile_json(
-    private_key, password, version=3, kdf="pbkdf2", iterations=None, salt_size=16
-):
+    private_key: Union[bytes, bytearray, memoryview],
+    password: str,
+    version: int = 3,
+    kdf: KDFType = "pbkdf2",
+    iterations: Union[int, None] = None,
+    salt_size: int = 16,
+) -> Dict[str, Any]:
     if version == 3:
         return _create_v3_keyfile_json(
             private_key, password, kdf, iterations, salt_size
@@ -54,7 +116,7 @@ def create_keyfile_json(
         raise NotImplementedError("Not yet implemented")
 
 
-def decode_keyfile_json(raw_keyfile_json, password):
+def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: str) -> bytes:
     keyfile_json = normalize_keys(raw_keyfile_json)
     version = keyfile_json["version"]
 
@@ -64,14 +126,16 @@ def decode_keyfile_json(raw_keyfile_json, password):
         raise NotImplementedError("Not yet implemented")
 
 
-def extract_key_from_keyfile(path_or_file_obj, password):
+def extract_key_from_keyfile(
+    path_or_file_obj: Union[str, IO[str]], password: str
+) -> bytes:
     keyfile_json = load_keyfile(path_or_file_obj)
     private_key = decode_keyfile_json(keyfile_json, password)
     return private_key
 
 
-@to_dict
-def normalize_keys(keyfile_json):
+@typed_to_dict
+def normalize_keys(keyfile_json: Dict[Any, Any]) -> Any:
     for key, value in keyfile_json.items():
         if is_string(key):
             norm_key = key.lower()
@@ -94,7 +158,13 @@ SCRYPT_R = 1
 SCRYPT_P = 8
 
 
-def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None, salt_size=16):
+def _create_v3_keyfile_json(
+    private_key: Union[bytes, bytearray, memoryview],
+    password: str,
+    kdf: KDFType,
+    work_factor: Union[int, None] = None,
+    salt_size: int = 16,
+) -> Dict[str, Any]:
     salt = Random.get_random_bytes(salt_size)
 
     if work_factor is None:
@@ -160,7 +230,7 @@ def _create_v3_keyfile_json(private_key, password, kdf, work_factor=None, salt_s
 #
 # Verson 3 decoder
 #
-def _decode_keyfile_json_v3(keyfile_json, password):
+def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: str) -> bytes:
     crypto = keyfile_json["crypto"]
     kdf = crypto["kdf"]
 
@@ -196,7 +266,7 @@ def _decode_keyfile_json_v3(keyfile_json, password):
 #
 # Key derivation
 #
-def _derive_pbkdf_key(crypto, password):
+def _derive_pbkdf_key(crypto: Dict[str, Any], password: str) -> bytes:
     kdf_params = crypto["kdfparams"]
     salt = decode_hex(kdf_params["salt"])
     dklen = kdf_params["dklen"]
@@ -209,7 +279,7 @@ def _derive_pbkdf_key(crypto, password):
     return derive_pbkdf_key
 
 
-def _derive_scrypt_key(crypto, password):
+def _derive_scrypt_key(crypto: Dict[str, Any], password: str) -> bytes:
     kdf_params = crypto["kdfparams"]
     salt = decode_hex(kdf_params["salt"])
     p = kdf_params["p"]
@@ -228,7 +298,9 @@ def _derive_scrypt_key(crypto, password):
     return derived_scrypt_key
 
 
-def _scrypt_hash(password, salt, n, r, p, buflen):
+def _scrypt_hash(
+    password: str, salt: bytes, n: int, r: int, p: int, buflen: int
+) -> bytes:
     derived_key = scrypt(
         password,
         salt=salt,
@@ -238,10 +310,12 @@ def _scrypt_hash(password, salt, n, r, p, buflen):
         p=p,
         num_keys=1,
     )
-    return derived_key
+    return cast(bytes, derived_key)
 
 
-def _pbkdf2_hash(password, hash_name, salt, iterations, dklen):
+def _pbkdf2_hash(
+    password: Any, hash_name: str, salt: bytes, iterations: int, dklen: int
+) -> bytes:
     derived_key = hashlib.pbkdf2_hmac(
         hash_name=hash_name,
         password=password,
@@ -256,23 +330,25 @@ def _pbkdf2_hash(password, hash_name, salt, iterations, dklen):
 #
 # Encryption and Decryption
 #
-def decrypt_aes_ctr(ciphertext, key, iv):
+def decrypt_aes_ctr(ciphertext: bytes, key: bytes, iv: int) -> bytes:
     ctr = Counter.new(128, initial_value=iv, allow_wraparound=True)
     encryptor = AES.new(key, AES.MODE_CTR, counter=ctr)
-    return encryptor.decrypt(ciphertext)
+    return cast(bytes, encryptor.decrypt(ciphertext))
 
 
-def encrypt_aes_ctr(value, key, iv):
+def encrypt_aes_ctr(
+    value: Union[bytes, bytearray, memoryview], key: bytes, iv: int
+) -> bytes:
     ctr = Counter.new(128, initial_value=iv, allow_wraparound=True)
     encryptor = AES.new(key, AES.MODE_CTR, counter=ctr)
     ciphertext = encryptor.encrypt(value)
-    return ciphertext
+    return cast(bytes, ciphertext)
 
 
 #
 # Utility
 #
-def get_default_work_factor_for_kdf(kdf):
+def get_default_work_factor_for_kdf(kdf: KDFType) -> int:
     if kdf == "pbkdf2":
         return 1000000
     elif kdf == "scrypt":
