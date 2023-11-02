@@ -22,8 +22,6 @@ extras_require = {
         "requests>=2.20,<3",
     ],
     "docs": [
-        "sphinx>=6.0.0",
-        "sphinx_rtd_theme>=1.0.0",
         "towncrier>=21,<22",
     ],
     "test": [

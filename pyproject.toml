@@ -70,7 +70,7 @@ log_date_format = "%m-%d %H:%M:%S"
 [tool.towncrier]
 # Read https://github.com/ethereum/eth-keyfile/blob/main/newsfragments/README.md for instructions
 package = "eth_keyfile"
-filename = "docs/release_notes.rst"
+filename = "CHANGELOG.rst"
 directory = "newsfragments"
 underlines = ["-", "~", "^"]
 title_format = "eth-keyfile v{version} ({project_date})"
