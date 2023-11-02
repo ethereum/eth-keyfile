@@ -53,7 +53,7 @@ setup(
     long_description_content_type="text/markdown",
     author="The Ethereum Foundation",
     author_email="snakecharmers@ethereum.org",
-    url="https://github.com/ethereum/<REPO_NAME>",
+    url="https://github.com/ethereum/eth-keyfile",
     include_package_data=True,
     install_requires=[
         "eth-utils>=2",
@@ -62,12 +62,12 @@ setup(
     ],
     python_requires=">=3.8, <4",
     extras_require=extras_require,
-    py_modules=["<MODULE_NAME>"],
+    py_modules=["eth_keyfile"],
     license="MIT",
     zip_safe=False,
     keywords="ethereum",
     packages=find_packages(exclude=["tests", "tests.*"]),
-    package_data={"<MODULE_NAME>": ["py.typed"]},
+    package_data={"eth_keyfile": ["py.typed"]},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

@@ -1,6 +1,6 @@
-<MODULE_NAME>
-<PYPI_NAME>
-<REPO_NAME>
-<RTD_NAME>
-<PROJECT_NAME>
-<SHORT_DESCRIPTION>
+eth_keyfile
+eth-keyfile
+eth-keyfile
+eth-keyfile
+eth-keyfile
+A library for handling the encrypted keyfiles used to store ethereum private keys

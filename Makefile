@@ -52,8 +52,8 @@ notes: check-bump
 	git commit -m "Compile release notes"
 
 release: check-bump clean
-	# require that upstream is configured for ethereum/<REPO_NAME>
-	git remote -v | grep "upstream\tgit@github.com:ethereum/<REPO_NAME>.git (push)\|upstream\thttps://github.com/ethereum/<REPO_NAME> (push)"
+	# require that upstream is configured for ethereum/eth-keyfile
+	git remote -v | grep "upstream\tgit@github.com:ethereum/eth-keyfile.git (push)\|upstream\thttps://github.com/ethereum/eth-keyfile (push)"
 	# verify that docs build correctly
 	./newsfragments/validate_files.py is-empty
 	make docs
