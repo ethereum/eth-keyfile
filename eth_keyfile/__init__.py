@@ -3,10 +3,10 @@ from importlib.metadata import (
 )
 
 from eth_keyfile.keyfile import (
-    load_keyfile,
     create_keyfile_json,
     decode_keyfile_json,
     extract_key_from_keyfile,
+    load_keyfile,
 )
 
 __version__ = __version("eth-keyfile")

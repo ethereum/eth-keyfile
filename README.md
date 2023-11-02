@@ -51,11 +51,11 @@ returns the parsed keyfile json as a python dictionary.
 
 Takes the following parameters:
 
-* `private_key`: A bytestring of length 32
-* `password`: A bytestring which will be the password that can be used to decrypt the resulting keyfile.
-* `kdf`: The key derivation function.  Allowed values are `pbkdf2` and `scrypt`.  By default, `pbkdf2` will be used.
-* `work_factor`: The work factor which will be used for the given key derivation function.  By default `1000000` will be used for `pbkdf2` and `262144` for `scrypt`.
-* `salt_size`: Salt size in bytes.
+- `private_key`: A bytestring of length 32
+- `password`: A bytestring which will be the password that can be used to decrypt the resulting keyfile.
+- `kdf`: The key derivation function.  Allowed values are `pbkdf2` and `scrypt`.  By default, `pbkdf2` will be used.
+- `work_factor`: The work factor which will be used for the given key derivation function.  By default `1000000` will be used for `pbkdf2` and `262144` for `scrypt`.
+- `salt_size`: Salt size in bytes.
 
 Returns the keyfile json as a python dictionary.
 
