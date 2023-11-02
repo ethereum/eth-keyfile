@@ -4,6 +4,7 @@ from dataclasses import (
 )
 import hashlib
 import hmac
+import io
 import json
 from typing import (
     IO,
@@ -96,7 +97,7 @@ def load_keyfile(path_or_file_obj: Union[str, IO[str]]) -> Any:
         with open(path_or_file_obj) as keyfile_file:
             return json.load(keyfile_file)
     else:
-        assert isinstance(path_or_file_obj, IO)
+        assert isinstance(path_or_file_obj, io.TextIOBase)
         return json.load(path_or_file_obj)
 
 
