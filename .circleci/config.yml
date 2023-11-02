@@ -26,12 +26,11 @@ common: &common
     - run:
         name: install unix dependencies
         command: |
-          sudo apt install -y build-essential
-          sudo apt install -y automake
-          sudo apt install -y pkg-config
-          sudo apt install -y libtool
-          sudo apt install -y libffi-dev
-          sudo apt install -y libgmp-dev
+          # sudo apt install -y build-essential
+          # sudo apt install -y pkg-config
+          # sudo apt install -y libtool
+          # sudo apt install -y libffi-dev
+          # sudo apt install -y libgmp-dev
           echo "Done Installing Unix Packages"
     - run:
         name: install dependencies
