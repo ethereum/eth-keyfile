@@ -14,12 +14,6 @@ extras_require = {
         "tox>=4.0.0",
         "twine",
         "wheel",
-        # see about dropping pins:
-        "pluggy>=1.0.0,<2",
-        # Fixing this dependency due to: requests 2.20.1 has requirement idna<2.8,>=2.5, but you'll have idna 2.8 which is incompatible.
-        "idna==2.7",
-        # idna 2.7 is not supported by requests 2.18
-        "requests>=2.20,<3",
     ],
     "docs": [
         "towncrier>=21,<22",
