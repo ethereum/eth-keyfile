@@ -1,7 +1,3 @@
-from dataclasses import (
-    dataclass,
-    field,
-)
 import hashlib
 import hmac
 import io
@@ -62,29 +58,6 @@ typed_to_dict = cast(
     ],
     to_dict,
 )
-
-
-@dataclass
-class CipherParams:
-    iv: str  # Assuming iv will be a hex string
-
-
-@dataclass
-class Crypto:
-    cipher: str
-    cipherparams: CipherParams
-    ciphertext: str
-    kdf: KDFType
-    kdfparams: Dict[str, Any]  # KDF params can vary, so we use a flexible Dict here
-    mac: str
-
-
-@dataclass
-class Keyfile:
-    address: str
-    crypto: Crypto
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    version: int = 3
 
 
 def encode_hex_no_prefix(value: AnyStr) -> HexStr:
