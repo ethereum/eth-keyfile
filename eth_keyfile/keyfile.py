@@ -202,7 +202,7 @@ def _create_v3_keyfile_json(
             "salt": encode_hex_no_prefix(salt),
         }
     else:
-        raise NotImplementedError("KDF not implemented: {0}".format(kdf))
+        raise NotImplementedError(f"KDF not implemented: {kdf}")
 
     iv = big_endian_to_int(Random.get_random_bytes(16))
     encrypt_key = derived_key[:16]
@@ -242,7 +242,7 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: str) -> byte
     elif kdf == "scrypt":
         derived_key = _derive_scrypt_key(crypto, password)
     else:
-        raise TypeError("Unsupported key derivation function: {0}".format(kdf))
+        raise TypeError(f"Unsupported key derivation function: {kdf}")
 
     # Validate that the derived key matchs the provided MAC
     ciphertext = decode_hex(crypto["ciphertext"])
@@ -355,4 +355,4 @@ def get_default_work_factor_for_kdf(kdf: KDFType) -> int:
     elif kdf == "scrypt":
         return 262144
     else:
-        raise ValueError("Unsupported key derivation function: {0}".format(kdf))
+        raise ValueError(f"Unsupported key derivation function: {kdf}")
