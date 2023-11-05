@@ -12,14 +12,12 @@ def extract_doctests(md_content):
 
 def run_doctests(code):
     """Run doctests in the given block of code."""
-    breakpoint()
     parser = doctest.DocTestParser()
     test = parser.get_doctest(code, {}, "extracted_doctests", "extracted", 0)
     runner = doctest.DocTestRunner()
     runner.run(test)
 
 
-# Assuming 'example.md' is your markdown file with Python code blocks.
 with open("README.md", "r") as f:
     markdown_content = f.read()
 
