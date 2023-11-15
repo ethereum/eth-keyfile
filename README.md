@@ -1,71 +1,20 @@
-# Ethereum Keyfile
+# eth-keyfile
+
+[![Join the conversation on Discord](https://img.shields.io/discord/809793915578089484?color=blue&label=chat&logo=discord&logoColor=white)](https://discord.gg/GHryRvPB84) [![Build Status](https://circleci.com/gh/ethereum/eth-keyfile.svg?style=shield)](https://circleci.com/gh/ethereum/eth-keyfile)
+[![PyPI version](https://badge.fury.io/py/eth-keyfile.svg)](https://badge.fury.io/py/eth-keyfile)
+[![Python versions](https://img.shields.io/pypi/pyversions/eth-keyfile.svg)](https://pypi.python.org/pypi/eth-keyfile)
 
 A library for handling the encrypted keyfiles used to store ethereum private keys
 
-
 > This library and repository was previously located at https://github.com/pipermerriam/ethereum-keyfile.  It was transferred to the Ethereum foundation github in November 2017 and renamed to `eth-keyfile`.  The PyPi package was also renamed from `ethereum-keyfile` to `eth-keyfile`.
 
-## Installation
+Read more in the documentation below. [View the change log](https://github.com/ethereum/eth-keyfile/blob/master/CHANGELOG.rst).
+
+## Quickstart
 
 ```sh
-pip install eth-keyfile
+python -m pip install eth-keyfile
 ```
-
-
-## Development
-
-```sh
-pip install -e .[dev]
-```
-
-
-### Running the tests
-
-You can run the tests with:
-
-```sh
-py.test tests
-```
-
-Or you can install `tox` to run the full test suite.
-
-
-### Releasing
-
-Pandoc is required for transforming the markdown README to the proper format to
-render correctly on pypi.
-
-For Debian-like systems:
-
-```
-apt install pandoc
-```
-
-Or on OSX:
-
-```sh
-brew install pandoc
-```
-
-To release a new version:
-
-```sh
-make release bump=$$VERSION_PART_TO_BUMP$$
-```
-
-#### How to bumpversion
-
-The version format for this repo is `{major}.{minor}.{patch}` for stable, and
-`{major}.{minor}.{patch}-{stage}.{devnum}` for unstable (`stage` can be alpha or beta).
-
-To issue the next version in line, specify which part to bump,
-like `make release bump=minor` or `make release bump=devnum`.
-
-If you are in a beta version, `make release bump=stage` will switch to a stable.
-
-To issue an unstable version when the current version is stable, specify the
-new version explicitly, like `make release bump="--new-version 2.0.0-alpha.1 devnum"`
-
 
 ## Documentation
 
@@ -98,16 +47,15 @@ returns the parsed keyfile json as a python dictionary.
 }
 ```
 
-
 ### `eth_keyfile.create_keyfile_json(private_key, password, kdf="pbkdf2", work_factor=None, salt_size=16) --> keyfile_json`
 
 Takes the following parameters:
 
-* `private_key`: A bytestring of length 32
-* `password`: A bytestring which will be the password that can be used to decrypt the resulting keyfile.
-* `kdf`: The key derivation function.  Allowed values are `pbkdf2` and `scrypt`.  By default, `pbkdf2` will be used.
-* `work_factor`: The work factor which will be used for the given key derivation function.  By default `1000000` will be used for `pbkdf2` and `262144` for `scrypt`.
-* `salt_size`: Salt size in bytes.
+- `private_key`: A bytestring of length 32
+- `password`: A bytestring which will be the password that can be used to decrypt the resulting keyfile.
+- `kdf`: The key derivation function.  Allowed values are `pbkdf2` and `scrypt`.  By default, `pbkdf2` will be used.
+- `work_factor`: The work factor which will be used for the given key derivation function.  By default `1000000` will be used for `pbkdf2` and `262144` for `scrypt`.
+- `salt_size`: Salt size in bytes.
 
 Returns the keyfile json as a python dictionary.
 
@@ -174,3 +122,54 @@ password for the keyfile.  Returns the private key as a bytestring.
 >>> extract_key_from_keyfile('path/to-my-keystore/keyfile.json', b'foo')
 b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
 ```
+
+## Developer Setup
+
+If you would like to hack on eth-keyfile, please check out the [Snake Charmers
+Tactical Manual](https://github.com/ethereum/snake-charmers-tactical-manual)
+for information on how we do:
+
+- Testing
+- Pull Requests
+- Documentation
+
+We use [pre-commit](https://pre-commit.com/) to maintain consistent code style. Once
+installed, it will run automatically with every commit. You can also run it manually
+with `make lint`. If you need to make a commit that skips the `pre-commit` checks, you
+can do so with `git commit --no-verify`.
+
+### Development Environment Setup
+
+You can set up your dev environment with:
+
+```sh
+git clone git@github.com:ethereum/eth-keyfile.git
+cd eth-keyfile
+virtualenv -p python3 venv
+. venv/bin/activate
+python -m pip install -e ".[dev]"
+pre-commit install
+```
+
+### Release setup
+
+To release a new version:
+
+```sh
+make release bump=$$VERSION_PART_TO_BUMP$$
+```
+
+#### How to bumpversion
+
+The version format for this repo is `{major}.{minor}.{patch}` for stable, and
+`{major}.{minor}.{patch}-{stage}.{devnum}` for unstable (`stage` can be alpha or beta).
+
+To issue the next version in line, specify which part to bump,
+like `make release bump=minor` or `make release bump=devnum`. This is typically done from the
+main branch, except when releasing a beta (in which case the beta is released from main,
+and the previous stable branch is released from said branch).
+
+If you are in a beta version, `make release bump=stage` will switch to a stable.
+
+To issue an unstable version when the current version is stable, specify the
+new version explicitly, like `make release bump="--new-version 4.0.0-alpha.1 devnum"`

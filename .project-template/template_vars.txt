@@ -1,0 +1,6 @@
+eth_keyfile
+eth-keyfile
+eth-keyfile
+eth-keyfile
+eth-keyfile
+A library for handling the encrypted keyfiles used to store ethereum private keys
