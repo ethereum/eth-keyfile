@@ -1,3 +1,25 @@
+eth-keyfile v0.7.0 (2023-12-06)
+-------------------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- Use correct default parameters for ``scrypt`` (`#39 <https://github.com/ethereum/eth-keyfile/issues/39>`__)
+- Drop python 3.7 support (`#47 <https://github.com/ethereum/eth-keyfile/issues/47>`__)
+
+
+Features
+~~~~~~~~
+
+- Checksum address when creating a keyfile (`#35 <https://github.com/ethereum/eth-keyfile/issues/35>`__)
+
+
+Internal Changes - for eth-keyfile Contributors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Merge project template updates, including using pre-commit for linting. Add typing. (`#47 <https://github.com/ethereum/eth-keyfile/issues/47>`__)
+
+
 0.6.1
 -----
 

@@ -1,1 +1,0 @@
-Merge project template updates, including using pre-commit for linting. Add typing.
