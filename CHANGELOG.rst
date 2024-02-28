@@ -1,3 +1,12 @@
+eth-keyfile v0.8.0 (2024-02-28)
+-------------------------------
+
+Features
+~~~~~~~~
+
+- Add decode keyfile json v4 (`#42 <https://github.com/ethereum/eth-keyfile/issues/42>`__)
+
+
 eth-keyfile v0.7.0 (2023-12-06)
 -------------------------------
 
