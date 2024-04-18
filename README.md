@@ -8,7 +8,7 @@ A library for handling the encrypted keyfiles used to store ethereum private key
 
 > This library and repository was previously located at https://github.com/pipermerriam/ethereum-keyfile.  It was transferred to the Ethereum foundation github in November 2017 and renamed to `eth-keyfile`.  The PyPi package was also renamed from `ethereum-keyfile` to `eth-keyfile`.
 
-Read more in the documentation below. [View the change log](https://github.com/ethereum/eth-keyfile/blob/master/CHANGELOG.rst).
+Read more in the documentation below. [View the change log](https://github.com/ethereum/eth-keyfile/blob/main/CHANGELOG.rst).
 
 ## Quickstart
 

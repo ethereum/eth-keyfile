@@ -18,7 +18,7 @@ def run_doctests(code):
     runner.run(test)
 
 
-with open("README.md", "r") as f:
+with open("README.md") as f:
     markdown_content = f.read()
 
 code_to_test = extract_doctests(markdown_content)
