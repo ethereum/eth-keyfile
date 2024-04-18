@@ -31,7 +31,7 @@ lint:
 	)
 
 test:
-	pytest tests
+	python -m pytest tests
 
 docs:
 	python ./newsfragments/validate_files.py
@@ -42,18 +42,18 @@ ifndef bump
 	$(error bump must be set, typically: major, minor, patch, or devnum)
 endif
 
-notes: check-bump
+notes: check-bump validate-newsfragments
 	# Let UPCOMING_VERSION be the version that is used for the current bump
 	$(eval UPCOMING_VERSION=$(shell bumpversion $(bump) --dry-run --list | grep new_version= | sed 's/new_version=//g'))
 	# Now generate the release notes to have them included in the release commit
 	towncrier build --yes --version $(UPCOMING_VERSION)
 	# Before we bump the version, make sure that the towncrier-generated docs will build
 	make docs
-	git commit -m "Compile release notes"
+	git commit -m "Compile release notes for v$(UPCOMING_VERSION)"
 
 release: check-bump clean
 	# require that upstream is configured for ethereum/eth-keyfile
-	@git remote -v | grep -E "upstream\tgit@github.com:ethereum/eth-keyfile.git \(push\)|upstream\thttps://(www.)?github.com/ethereum/eth-keyfile \(push\)"
+	@git remote -v | grep "upstream[[:space:]]git@github.com:ethereum/eth-keyfile.git (push)\|upstream[[:space:]]https://github.com/ethereum/eth-keyfile (push)"
 	# verify that docs build correctly
 	./newsfragments/validate_files.py is-empty
 	make docs

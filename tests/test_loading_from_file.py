@@ -1,9 +1,9 @@
 import json
+import pytest
 
 from eth_utils import (
     decode_hex,
 )
-import pytest
 
 from eth_keyfile.keyfile import (
     create_keyfile_json,
