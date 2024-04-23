@@ -1,3 +1,18 @@
+eth-keyfile v0.8.1 (2024-04-23)
+-------------------------------
+
+Internal Changes - for eth-keyfile Contributors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Merge template updates, notably adding python 3.12 support (`#52 <https://github.com/ethereum/eth-keyfile/issues/52>`__)
+
+
+Miscellaneous Changes
+~~~~~~~~~~~~~~~~~~~~~
+
+- `#53 <https://github.com/ethereum/eth-keyfile/issues/53>`__
+
+
 eth-keyfile v0.8.0 (2024-02-28)
 -------------------------------
 
