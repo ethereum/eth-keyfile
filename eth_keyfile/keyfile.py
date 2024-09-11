@@ -6,12 +6,8 @@ from typing import (
     IO,
     Any,
     AnyStr,
-    Callable,
     Dict,
-    Iterable,
     Literal,
-    Mapping,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -51,13 +47,6 @@ from eth_utils import (
 KDFType = Literal["pbkdf2", "scrypt"]
 TKey = TypeVar("TKey")
 TVal = TypeVar("TVal")
-typed_to_dict = cast(
-    Callable[
-        [Callable[..., Iterable[Union[Mapping[TKey, TVal], Tuple[TKey, TVal]]]]],
-        Callable[..., Dict[TKey, TVal]],
-    ],
-    to_dict,
-)
 
 
 def encode_hex_no_prefix(value: AnyStr) -> HexStr:
@@ -76,7 +65,7 @@ def load_keyfile(path_or_file_obj: Union[str, IO[str]]) -> Any:
 
 def create_keyfile_json(
     private_key: Union[bytes, bytearray, memoryview],
-    password: str,
+    password: bytes,
     version: int = 3,
     kdf: KDFType = "pbkdf2",
     iterations: Union[int, None] = None,
@@ -90,7 +79,7 @@ def create_keyfile_json(
         raise NotImplementedError("Not yet implemented")
 
 
-def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: str) -> bytes:
+def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: bytes) -> bytes:
     keyfile_json = normalize_keys(raw_keyfile_json)
     version = keyfile_json["version"]
 
@@ -103,14 +92,14 @@ def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: str) -> byte
 
 
 def extract_key_from_keyfile(
-    path_or_file_obj: Union[str, IO[str]], password: str
+    path_or_file_obj: Union[str, IO[str]], password: bytes
 ) -> bytes:
     keyfile_json = load_keyfile(path_or_file_obj)
     private_key = decode_keyfile_json(keyfile_json, password)
     return private_key
 
 
-@typed_to_dict
+@to_dict
 def normalize_keys(keyfile_json: Dict[Any, Any]) -> Any:
     for key, value in keyfile_json.items():
         if is_string(key):
@@ -136,7 +125,7 @@ SCRYPT_P = 1
 
 def _create_v3_keyfile_json(
     private_key: Union[bytes, bytearray, memoryview],
-    password: str,
+    password: bytes,
     kdf: KDFType,
     work_factor: Union[int, None] = None,
     salt_size: int = 16,
@@ -206,7 +195,7 @@ def _create_v3_keyfile_json(
 #
 # Verson 3 decoder
 #
-def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: str) -> bytes:
+def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: bytes) -> bytes:
     crypto = keyfile_json["crypto"]
     kdf = crypto["kdf"]
 
@@ -242,7 +231,7 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: str) -> byte
 #
 # Verson 4 decoder
 #
-def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: str) -> bytes:
+def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: bytes) -> bytes:
     crypto = keyfile_json["crypto"]
     kdf = crypto["kdf"]["function"]
 
@@ -278,7 +267,7 @@ def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: str) -> byte
 #
 # Key derivation
 #
-def _derive_pbkdf_key(kdf_params: Dict[str, Any], password: str) -> bytes:
+def _derive_pbkdf_key(kdf_params: Dict[str, Any], password: bytes) -> bytes:
     salt = decode_hex(kdf_params["salt"])
     dklen = kdf_params["dklen"]
     should_be_hmac, _, hash_name = kdf_params["prf"].partition("-")
@@ -290,7 +279,7 @@ def _derive_pbkdf_key(kdf_params: Dict[str, Any], password: str) -> bytes:
     return derive_pbkdf_key
 
 
-def _derive_scrypt_key(kdf_params: Dict[str, Any], password: str) -> bytes:
+def _derive_scrypt_key(kdf_params: Dict[str, Any], password: bytes) -> bytes:
     salt = decode_hex(kdf_params["salt"])
     p = kdf_params["p"]
     r = kdf_params["r"]
@@ -309,22 +298,25 @@ def _derive_scrypt_key(kdf_params: Dict[str, Any], password: str) -> bytes:
 
 
 def _scrypt_hash(
-    password: str, salt: bytes, n: int, r: int, p: int, buflen: int
+    password: bytes, salt: bytes, n: int, r: int, p: int, buflen: int
 ) -> bytes:
     derived_key = scrypt(
-        password,
-        salt=salt,
+        # scrypt uniquely accepts str, not bytes, for password and salt
+        # latin-1 is used in pycryptodome for bytes encoding/decoding
+        password.decode("latin-1"),
+        salt.decode("latin-1"),
         key_len=buflen,
         N=n,
         r=r,
         p=p,
         num_keys=1,
     )
+    # num_keys is set to 1, so rtype will always be bytes, not Tuple[bytes, ...]
     return cast(bytes, derived_key)
 
 
 def _pbkdf2_hash(
-    password: Any, hash_name: str, salt: bytes, iterations: int, dklen: int
+    password: bytes, hash_name: str, salt: bytes, iterations: int, dklen: int
 ) -> bytes:
     derived_key = hashlib.pbkdf2_hmac(
         hash_name=hash_name,
@@ -343,7 +335,7 @@ def _pbkdf2_hash(
 def decrypt_aes_ctr(ciphertext: bytes, key: bytes, iv: int) -> bytes:
     ctr = Counter.new(128, initial_value=iv, allow_wraparound=True)
     encryptor = AES.new(key, AES.MODE_CTR, counter=ctr)
-    return cast(bytes, encryptor.decrypt(ciphertext))
+    return encryptor.decrypt(ciphertext)
 
 
 def encrypt_aes_ctr(
@@ -352,7 +344,7 @@ def encrypt_aes_ctr(
     ctr = Counter.new(128, initial_value=iv, allow_wraparound=True)
     encryptor = AES.new(key, AES.MODE_CTR, counter=ctr)
     ciphertext = encryptor.encrypt(value)
-    return cast(bytes, ciphertext)
+    return ciphertext
 
 
 #
