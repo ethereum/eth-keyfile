@@ -48,8 +48,9 @@ setup(
     url="https://github.com/ethereum/eth-keyfile",
     include_package_data=True,
     install_requires=[
-        "eth-utils>=2",
         "eth-keys>=0.4.0",
+        "eth-utils>=2",
+        "py_ecc>=5.2.0",
         "pycryptodome>=3.6.6,<4",
     ],
     python_requires=">=3.8, <4",
