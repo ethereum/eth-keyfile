@@ -2,15 +2,13 @@ import hashlib
 import hmac
 import io
 import json
-from secrets import (
-    randbits,
-)
 from typing import (
     IO,
     Any,
     AnyStr,
     Dict,
     Literal,
+    Optional,
     TypeVar,
     Union,
     cast,
@@ -84,11 +82,11 @@ def create_keyfile_json(
     password: bytes,
     version: int = 3,
     kdf: KDFType = "pbkdf2",
-    iterations: Union[int, None] = None,
-    salt_size: int = 16,
-    description: str = "",
-    path: str = "",
-    aes_iv: bytes = randbits(128).to_bytes(16, "big"),
+    iterations: Optional[int] = None,
+    salt_size: Optional[int] = None,
+    description: Optional[str] = None,
+    path: Optional[str] = None,
+    aes_iv: Optional[bytes] = None,
 ) -> Dict[str, Any]:
     if version == 3:
         return _create_v3_keyfile_json(
@@ -150,13 +148,16 @@ def _create_v3_keyfile_json(
     private_key: Union[bytes, bytearray, memoryview],
     password: bytes,
     kdf: KDFType,
-    work_factor: Union[int, None] = None,
-    salt_size: int = 16,
+    work_factor: Optional[int] = None,
+    salt_size: Optional[int] = None,
 ) -> Dict[str, Any]:
-    salt = Random.get_random_bytes(salt_size)
-
+    # fill in the blanks
     if work_factor is None:
         work_factor = get_default_work_factor_for_kdf(kdf)
+    if salt_size is None:
+        salt_size = 16
+
+    salt = Random.get_random_bytes(salt_size)
 
     if kdf == "pbkdf2":
         derived_key = _pbkdf2_hash(
@@ -260,24 +261,33 @@ def _create_v4_keyfile_json(
     private_key: Union[bytes, bytearray, memoryview],
     password: bytes,
     kdf: KDFType,
-    work_factor: Union[int, None] = None,
-    salt_size: int = 32,
-    description: str = "",
-    path: str = "",
-    aes_iv: bytes = randbits(128).to_bytes(16, "big"),
+    work_factor: Optional[int] = None,
+    salt_size: Optional[int] = None,
+    description: Optional[str] = None,
+    path: Optional[str] = None,
+    aes_iv: Optional[bytes] = None,
 ) -> Dict[str, Any]:
+    # fill in the blanks
+    if work_factor is None:
+        work_factor = get_default_work_factor_for_kdf(kdf)
+    if salt_size is None:
+        salt_size = 32
+    if description is None:
+        description = ""
+    if path is None:
+        path = ""
+    if aes_iv is None:
+        aes_iv = Random.get_random_bytes(16)
+
+    salt: bytes = Random.get_random_bytes(salt_size)
+    uuid: str = str(uuid4())
+
     # clean password
     password_str = normalize("NFKD", password.decode())
     password_str = "".join(
         c for c in password_str if ord(c) not in UNICODE_CONTROL_CHARS
     )
     clean_password = password_str.encode("UTF-8")
-
-    salt = Random.get_random_bytes(salt_size)
-    uuid: str = (str(uuid4()),)
-
-    if work_factor is None:
-        work_factor = get_default_work_factor_for_kdf(kdf)
 
     if kdf == "pbkdf2":
         derived_key = _pbkdf2_hash(
@@ -336,20 +346,18 @@ def _create_v4_keyfile_json(
         "message": checksum_msg.hexdigest(),
     }
 
-    return (
-        {
-            "crypto": {
-                "kdf": kdf_key,
-                "checksum": checksum_key,
-                "cipher": cipher_key,
-            },
-            "description": description,
-            "pubkey": bls.SkToPk(big_endian_to_int(private_key)).hex(),
-            "path": path,
-            "uuid": uuid,
-            "version": 4,
+    return {
+        "crypto": {
+            "kdf": kdf_key,
+            "checksum": checksum_key,
+            "cipher": cipher_key,
         },
-    )
+        "description": description,
+        "pubkey": bls.SkToPk(big_endian_to_int(private_key)).hex(),
+        "path": path,
+        "uuid": uuid,
+        "version": 4,
+    }
 
 
 #
