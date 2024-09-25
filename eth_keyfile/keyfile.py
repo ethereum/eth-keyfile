@@ -8,17 +8,26 @@ from typing import (
     AnyStr,
     Dict,
     Literal,
+    Optional,
     TypeVar,
     Union,
     cast,
 )
-import uuid
+from unicodedata import (
+    normalize,
+)
+from uuid import (
+    uuid4,
+)
 
 from Crypto import (
     Random,
 )
 from Crypto.Cipher import (
     AES,
+)
+from Crypto.Hash import (
+    SHA256,
 )
 from Crypto.Protocol.KDF import (
     scrypt,
@@ -43,6 +52,11 @@ from eth_utils import (
     remove_0x_prefix,
     to_dict,
 )
+from py_ecc.bls import (
+    G2ProofOfPossession as bls,
+)
+
+UNICODE_CONTROL_CHARS = list(range(0x00, 0x20)) + list(range(0x7F, 0xA0))
 
 KDFType = Literal["pbkdf2", "scrypt"]
 TKey = TypeVar("TKey")
@@ -68,12 +82,19 @@ def create_keyfile_json(
     password: bytes,
     version: int = 3,
     kdf: KDFType = "pbkdf2",
-    iterations: Union[int, None] = None,
-    salt_size: int = 16,
+    iterations: Optional[int] = None,
+    salt_size: Optional[int] = None,
+    description: Optional[str] = None,
+    path: Optional[str] = None,
+    aes_iv: Optional[bytes] = None,
 ) -> Dict[str, Any]:
     if version == 3:
         return _create_v3_keyfile_json(
             private_key, password, kdf, iterations, salt_size
+        )
+    if version == 4:
+        return _create_v4_keyfile_json(
+            private_key, password, kdf, iterations, salt_size, description, path, aes_iv
         )
     else:
         raise NotImplementedError("Not yet implemented")
@@ -116,7 +137,7 @@ def normalize_keys(keyfile_json: Dict[Any, Any]) -> Any:
 
 
 #
-# Version 3 creators
+# Version 3 creator
 #
 DKLEN = 32
 SCRYPT_R = 8
@@ -127,13 +148,16 @@ def _create_v3_keyfile_json(
     private_key: Union[bytes, bytearray, memoryview],
     password: bytes,
     kdf: KDFType,
-    work_factor: Union[int, None] = None,
-    salt_size: int = 16,
+    work_factor: Optional[int] = None,
+    salt_size: Optional[int] = None,
 ) -> Dict[str, Any]:
-    salt = Random.get_random_bytes(salt_size)
-
+    # fill in the blanks
     if work_factor is None:
         work_factor = get_default_work_factor_for_kdf(kdf)
+    if salt_size is None:
+        salt_size = 16
+
+    salt = Random.get_random_bytes(salt_size)
 
     if kdf == "pbkdf2":
         derived_key = _pbkdf2_hash(
@@ -187,7 +211,7 @@ def _create_v3_keyfile_json(
             "kdfparams": kdfparams,
             "mac": encode_hex_no_prefix(mac),
         },
-        "id": str(uuid.uuid4()),
+        "id": str(uuid4()),
         "version": 3,
     }
 
@@ -229,7 +253,115 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: bytes) -> by
 
 
 #
-# Verson 4 decoder
+# Version 4 creator
+#
+
+
+def _create_v4_keyfile_json(
+    private_key: Union[bytes, bytearray, memoryview],
+    password: bytes,
+    kdf: KDFType,
+    work_factor: Optional[int] = None,
+    salt_size: Optional[int] = None,
+    description: Optional[str] = None,
+    path: Optional[str] = None,
+    aes_iv: Optional[bytes] = None,
+) -> Dict[str, Any]:
+    # fill in the blanks
+    if work_factor is None:
+        work_factor = get_default_work_factor_for_kdf(kdf)
+    if salt_size is None:
+        salt_size = 32
+    if description is None:
+        description = ""
+    if path is None:
+        path = ""
+    if aes_iv is None:
+        aes_iv = Random.get_random_bytes(16)
+
+    salt: bytes = Random.get_random_bytes(salt_size)
+    uuid: str = str(uuid4())
+
+    # clean password
+    password_str = normalize("NFKD", password.decode())
+    password_str = "".join(
+        c for c in password_str if ord(c) not in UNICODE_CONTROL_CHARS
+    )
+    clean_password = password_str.encode("UTF-8")
+
+    if kdf == "pbkdf2":
+        derived_key = _pbkdf2_hash(
+            password=clean_password,
+            hash_name="sha256",
+            salt=salt,
+            iterations=work_factor,
+            dklen=DKLEN,
+        )
+        kdfparams = {
+            "c": work_factor,
+            "dklen": DKLEN,
+            "prf": "hmac-sha256",
+            "salt": encode_hex_no_prefix(salt),
+        }
+    elif kdf == "scrypt":
+        derived_key = _scrypt_hash(
+            password=clean_password,
+            salt=salt,
+            buflen=DKLEN,
+            r=SCRYPT_R,
+            p=SCRYPT_P,
+            n=work_factor,
+        )
+        kdfparams = {
+            "dklen": DKLEN,
+            "n": work_factor,
+            "r": SCRYPT_R,
+            "p": SCRYPT_P,
+            "salt": encode_hex_no_prefix(salt),
+        }
+    else:
+        raise NotImplementedError(f"KDF not implemented: {kdf}")
+
+    encrypt_key = derived_key[:16]
+    encoded_pk = encrypt_aes_ctr(private_key, encrypt_key, big_endian_to_int(aes_iv))
+    checksum_msg = SHA256.new(derived_key[16:32] + encoded_pk)
+
+    kdf_key = {
+        "function": kdf,
+        "params": kdfparams,
+        "message": "",
+    }
+
+    cipher_key = {
+        "function": "aes-128-ctr",
+        "params": {
+            "iv": aes_iv.hex(),
+        },
+        "message": encoded_pk.hex(),
+    }
+
+    checksum_key = {
+        "function": "sha256",
+        "params": {},
+        "message": checksum_msg.hexdigest(),
+    }
+
+    return {
+        "crypto": {
+            "kdf": kdf_key,
+            "checksum": checksum_key,
+            "cipher": cipher_key,
+        },
+        "description": description,
+        "pubkey": bls.SkToPk(big_endian_to_int(private_key)).hex(),
+        "path": path,
+        "uuid": uuid,
+        "version": 4,
+    }
+
+
+#
+# Version 4 decoder
 #
 def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: bytes) -> bytes:
     crypto = keyfile_json["crypto"]

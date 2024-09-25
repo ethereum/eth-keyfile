@@ -1,3 +1,5 @@
+import pytest
+
 from eth_utils import (
     decode_hex,
 )
@@ -13,12 +15,16 @@ PRIVATE_KEY = decode_hex(
 PASSWORD = b"foo"
 
 
-def test_pbkdf2_keyfile_creation():
+@pytest.mark.parametrize("kdf", ["pbkdf2", "scrypt"])
+@pytest.mark.parametrize("version", [3, 4])
+@pytest.mark.parametrize("iterations", [1, 2, 4])
+def test_keyfile_creation(kdf, version, iterations):
     keyfile_json = create_keyfile_json(
         PRIVATE_KEY,
         password=PASSWORD,
-        kdf="pbkdf2",
-        iterations=1,
+        version=version,
+        kdf=kdf,
+        iterations=iterations,
     )
     derived_private_key = decode_keyfile_json(keyfile_json, PASSWORD)
     assert derived_private_key == PRIVATE_KEY
@@ -33,17 +39,6 @@ def test_pbkdf2_keyfile_salt32_creation():
         salt_size=32,
     )
     assert len(keyfile_json["crypto"]["kdfparams"]["salt"]) == 32 * 2
-    derived_private_key = decode_keyfile_json(keyfile_json, PASSWORD)
-    assert derived_private_key == PRIVATE_KEY
-
-
-def test_scrypt_keyfile_creation():
-    keyfile_json = create_keyfile_json(
-        PRIVATE_KEY,
-        password=PASSWORD,
-        kdf="scrypt",
-        iterations=2,
-    )
     derived_private_key = decode_keyfile_json(keyfile_json, PASSWORD)
     assert derived_private_key == PRIVATE_KEY
 
