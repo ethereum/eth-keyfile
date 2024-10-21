@@ -63,6 +63,12 @@ from py_ecc.secp256k1 import (
     N,
 )
 
+from eth_keyfile.exceptions import (
+    EthKeyfileNotImplementedError,
+    EthKeyfileTypeError,
+    EthKeyfileValueError,
+)
+
 UNICODE_CONTROL_CHARS = list(range(0x00, 0x20)) + list(range(0x7F, 0xA0))
 
 # the maximum valid private key for secp256k1
@@ -109,7 +115,7 @@ def create_keyfile_json(
             private_key, password, kdf, iterations, salt_size, description, path
         )
     else:
-        raise NotImplementedError("Not yet implemented")
+        raise EthKeyfileNotImplementedError("Not yet implemented")
 
 
 def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: bytes) -> bytes:
@@ -121,7 +127,7 @@ def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: bytes) -> by
     if version == 4:
         return _decode_keyfile_json_v4(keyfile_json, password)
     else:
-        raise NotImplementedError("Not yet implemented")
+        raise EthKeyfileNotImplementedError("Not yet implemented")
 
 
 def extract_key_from_keyfile(
@@ -169,7 +175,7 @@ def _create_v3_keyfile_json(
         salt_size = 16
 
     if to_int(private_key) > MAX_V3_PRIVATE_KEY:
-        raise ValueError("Invalid `private_key`, exceeds maximum valid value")
+        raise EthKeyfileValueError("Invalid `private_key`, exceeds maximum valid value")
 
     salt = Random.get_random_bytes(salt_size)
 
@@ -204,7 +210,7 @@ def _create_v3_keyfile_json(
             "salt": encode_hex_no_prefix(salt),
         }
     else:
-        raise NotImplementedError(f"KDF not implemented: {kdf}")
+        raise EthKeyfileNotImplementedError(f"KDF not implemented: {kdf}")
 
     iv = big_endian_to_int(Random.get_random_bytes(16))
     encrypt_key = derived_key[:16]
@@ -244,7 +250,7 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: bytes) -> by
     elif kdf == "scrypt":
         derived_key = _derive_scrypt_key(crypto["kdfparams"], password)
     else:
-        raise TypeError(f"Unsupported key derivation function: {kdf}")
+        raise EthKeyfileTypeError(f"Unsupported key derivation function: {kdf}")
 
     # Validate that the derived key matchs the provided MAC
     ciphertext = decode_hex(crypto["ciphertext"])
@@ -253,7 +259,7 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: bytes) -> by
     expected_mac = decode_hex(crypto["mac"])
 
     if not hmac.compare_digest(mac, expected_mac):
-        raise ValueError("MAC mismatch")
+        raise EthKeyfileValueError("MAC mismatch")
 
     # Decrypt the ciphertext using the derived encryption key to get the
     # private key.
@@ -292,7 +298,7 @@ def _create_v4_keyfile_json(
     aes_iv = Random.get_random_bytes(16)
 
     if to_int(private_key) > MAX_V4_PRIVATE_KEY:
-        raise ValueError("Invalid `private_key`, exceeds maximum valid value")
+        raise EthKeyfileValueError("Invalid `private_key`, exceeds maximum valid value")
 
     salt: bytes = Random.get_random_bytes(salt_size)
     uuid: str = str(uuid4())
@@ -335,7 +341,7 @@ def _create_v4_keyfile_json(
             "salt": encode_hex_no_prefix(salt),
         }
     else:
-        raise NotImplementedError(f"KDF not implemented: {kdf}")
+        raise EthKeyfileNotImplementedError(f"KDF not implemented: {kdf}")
 
     encrypt_key = derived_key[:16]
     encoded_pk = encrypt_aes_ctr(private_key, encrypt_key, big_endian_to_int(aes_iv))
@@ -389,7 +395,7 @@ def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: bytes) -> by
     elif kdf == "scrypt":
         derived_key = _derive_scrypt_key(crypto["kdf"]["params"], password)
     else:
-        raise TypeError(f"Unsupported key derivation function: {kdf}")
+        raise EthKeyfileTypeError(f"Unsupported key derivation function: {kdf}")
 
     cipher_message = decode_hex(crypto["cipher"]["message"])
     checksum_message = crypto["checksum"]["message"]
@@ -398,7 +404,7 @@ def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: bytes) -> by
         hashlib.sha256(derived_key[16:32] + cipher_message).hexdigest()
         != checksum_message
     ):
-        raise ValueError("Checksum mismatch")
+        raise EthKeyfileValueError("Checksum mismatch")
 
     # Decrypt the cipher message using the derived encryption key to get the
     # private key.
@@ -503,4 +509,4 @@ def get_default_work_factor_for_kdf(kdf: KDFType) -> int:
     elif kdf == "scrypt":
         return 262144
     else:
-        raise ValueError(f"Unsupported key derivation function: {kdf}")
+        raise EthKeyfileValueError(f"Unsupported key derivation function: {kdf}")

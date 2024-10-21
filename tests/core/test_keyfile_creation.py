@@ -5,6 +5,9 @@ from eth_utils import (
     to_bytes,
 )
 
+from eth_keyfile.exceptions import (
+    EthKeyfileValueError,
+)
 from eth_keyfile.keyfile import (
     MAX_V3_PRIVATE_KEY,
     MAX_V4_PRIVATE_KEY,
@@ -78,7 +81,7 @@ def test_keyfile_v4_creation(
 
 @pytest.mark.parametrize("private_key", INVALID_V3)
 def test_invalid_v3_private_key_raises(private_key):
-    with pytest.raises(ValueError):
+    with pytest.raises(EthKeyfileValueError):
         create_keyfile_json(
             private_key,
             password=PASSWORD,
@@ -88,7 +91,7 @@ def test_invalid_v3_private_key_raises(private_key):
 
 @pytest.mark.parametrize("private_key", INVALID_V4)
 def test_invalid_v4_private_key_raises(private_key):
-    with pytest.raises(ValueError):
+    with pytest.raises(EthKeyfileValueError):
         create_keyfile_json(
             private_key,
             password=PASSWORD,
