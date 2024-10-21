@@ -163,7 +163,6 @@ def _create_v3_keyfile_json(
     work_factor: Optional[int] = None,
     salt_size: Optional[int] = None,
 ) -> Dict[str, Any]:
-    # fill in the blanks
     if work_factor is None:
         work_factor = get_default_work_factor_for_kdf(kdf)
     if salt_size is None:
