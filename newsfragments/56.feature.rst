@@ -1,0 +1,1 @@
+Add the ability to generate v4 keyfiles in accordance with EIP-2335
