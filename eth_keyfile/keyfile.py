@@ -280,7 +280,6 @@ def _create_v4_keyfile_json(
     description: Optional[str] = None,
     path: Optional[str] = None,
 ) -> Dict[str, Any]:
-    # fill in the blanks
     if work_factor is None:
         work_factor = get_default_work_factor_for_kdf(kdf)
     if salt_size is None:

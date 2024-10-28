@@ -117,3 +117,26 @@ def test_scrypt_keyfile_address():
         iterations=2,
     )
     assert keyfile_json["address"] == "008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b"
+
+
+def recursive_check_dicts(dict1, dict2):
+    for key in dict1:
+        if isinstance(dict1[key], dict):
+            recursive_check_dicts(dict1[key], dict2[key])
+        else:
+            assert type(dict1[key]) is type(dict2[key])
+
+
+@pytest.mark.parametrize("kdf", ["pbkdf2", "scrypt"])
+def test_v4_create_datatypes_match(kdf, v4_keyfile_data):
+    test_pk = v4_keyfile_data[kdf]["priv"]
+    test_pw = v4_keyfile_data[kdf]["password"]
+    new_keyfile = create_keyfile_json(
+        private_key=decode_hex(test_pk),
+        password=test_pw.encode("utf-8"),
+        version=4,
+        kdf=kdf,
+        description=v4_keyfile_data[kdf]["json"]["description"],
+        path=v4_keyfile_data[kdf]["json"]["path"],
+    )
+    recursive_check_dicts(new_keyfile, v4_keyfile_data[kdf]["json"])
