@@ -124,3 +124,8 @@ KEYFILE_FIXTURES.update(
 @pytest.fixture(params=KEYFILE_FIXTURES.keys())
 def keyfile_data(request):
     return KEYFILE_FIXTURES[request.param]
+
+
+@pytest.fixture
+def v4_keyfile_data():
+    return {"scrypt": SCRYPT_KEYFILE_V4, "pbkdf2": PBKDF2_KEYFILE_V4}
