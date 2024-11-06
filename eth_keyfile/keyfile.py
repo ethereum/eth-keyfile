@@ -175,7 +175,10 @@ def _create_v3_keyfile_json(
         salt_size = 16
 
     if to_int(private_key) > MAX_V3_PRIVATE_KEY:
-        raise EthKeyfileValueError("Invalid `private_key`, exceeds maximum valid value")
+        raise EthKeyfileValueError(
+            "Invalid `private_key`, exceeds maximum valid secp256k1 key "
+            f"value of {MAX_V3_PRIVATE_KEY}"
+        )
 
     salt = Random.get_random_bytes(salt_size)
 
@@ -298,7 +301,10 @@ def _create_v4_keyfile_json(
     aes_iv = Random.get_random_bytes(16)
 
     if to_int(private_key) > MAX_V4_PRIVATE_KEY:
-        raise EthKeyfileValueError("Invalid `private_key`, exceeds maximum valid value")
+        raise EthKeyfileValueError(
+            "Invalid `private_key`, exceeds maximum valid bls12-381 key "
+            f"value of {MAX_V4_PRIVATE_KEY}"
+        )
 
     salt: bytes = Random.get_random_bytes(salt_size)
     uuid: str = str(uuid4())

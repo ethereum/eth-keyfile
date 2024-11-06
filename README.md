@@ -51,7 +51,7 @@ returns the parsed keyfile json as a python dictionary.
 
 Takes the following parameters:
 
-- `private_key`: A bytestring of length 32. See note below
+- `private_key`: A bytestring of length 32. [See note below.](#a-note-on-private-keys)
 - `password`: A bytestring which will be the password that can be used to decrypt the resulting keyfile.
 - `version`: An `int` to select the keyfile standard to use. Supported are `3` and `4`. Defaults to `3`.
 - `kdf`: A `str` to select the key derivation function.  Allowed values are `pbkdf2` and `scrypt`.  By default, `pbkdf2` will be used.
@@ -119,14 +119,15 @@ Returns the keyfile json as a python dictionary.
     'version': 4}
 ```
 
-> **A note on private keys:**
+#### A note on private keys
+
 > Valid values for private keys are more limited with the keyfile v4 standard.
 >
 > In v3, a valid key must be less than
-> '0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364140',
+> '0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141',
 > a limit which most users are unlikely to run into.
 >
-> In v4, that value is '0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000000'.
+> In v4, the key must be less than '0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001'.
 >
 > These limits are due to the cryptographic functions used. `secp256k1` is used for v3,
 > while `bls12-381` is used for v4.
