@@ -1,1 +1,0 @@
-Create new ``EthKeyfileException`` and replace currently-used exceptions with ``EthKeyfile`` versions to allow more granular exception handling

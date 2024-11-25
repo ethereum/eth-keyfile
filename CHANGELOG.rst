@@ -1,3 +1,19 @@
+eth-keyfile v0.9.0-beta.1 (2024-11-25)
+--------------------------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- Update type of ``password`` arg to be ``bytes`` instead of ``str``, bump to ``mypy==1.10.0`` and have it run with all local deps installed (`#55 <https://github.com/ethereum/eth-keyfile/issues/55>`__)
+
+
+Features
+~~~~~~~~
+
+- Add the ability to generate v4 keyfiles in accordance with EIP-2335 (`#56 <https://github.com/ethereum/eth-keyfile/issues/56>`__)
+- Create new ``EthKeyfileException`` and replace currently-used exceptions with ``EthKeyfile`` versions to allow more granular exception handling (`#58 <https://github.com/ethereum/eth-keyfile/issues/58>`__)
+
+
 eth-keyfile v0.8.1 (2024-04-23)
 -------------------------------
 

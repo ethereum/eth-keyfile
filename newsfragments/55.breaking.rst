@@ -1,1 +1,0 @@
-Update type of ``password`` arg to be ``bytes`` instead of ``str``, bump to ``mypy==1.10.0`` and have it run with all local deps installed
