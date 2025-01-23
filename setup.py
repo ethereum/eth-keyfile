@@ -7,7 +7,7 @@ from setuptools import (
 extras_require = {
     "dev": [
         "build>=0.9.0",
-        "bumpversion>=0.5.3",
+        "bump_my_version>=0.19.0",
         "ipython",
         "mypy==1.10.0",
         "pre-commit>=3.4.0",
@@ -16,7 +16,7 @@ extras_require = {
         "wheel",
     ],
     "docs": [
-        "towncrier>=21,<22",
+        "towncrier>=24,<25",
     ],
     "test": [
         "pytest>=7.0.0",
@@ -72,5 +72,6 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ],
 )
