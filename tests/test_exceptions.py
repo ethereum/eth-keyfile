@@ -1,5 +1,5 @@
-import os
 import pytest
+import os
 
 from eth_keyfile.exceptions import (
     EthKeyfileException,
