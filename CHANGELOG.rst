@@ -1,3 +1,12 @@
+eth-keyfile v0.9.0 (2025-01-29)
+-------------------------------
+
+Features
+~~~~~~~~
+
+- Merge template, adding ``py313`` support and replacing ``bumpversion`` with ``bump-my-versions``. (`#59 <https://github.com/ethereum/eth-keyfile/issues/59>`__)
+
+
 eth-keyfile v0.9.0-beta.1 (2024-11-25)
 --------------------------------------
 
