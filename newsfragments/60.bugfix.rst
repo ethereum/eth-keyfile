@@ -1,0 +1,1 @@
+Fix bug where ``iv`` value in v3 keyfile could be length less than 32.

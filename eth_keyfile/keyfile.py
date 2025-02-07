@@ -45,7 +45,6 @@ from eth_utils import (
     big_endian_to_int,
     decode_hex,
     encode_hex,
-    int_to_big_endian,
     is_dict,
     is_string,
     keccak,
@@ -215,9 +214,9 @@ def _create_v3_keyfile_json(
     else:
         raise EthKeyfileNotImplementedError(f"KDF not implemented: {kdf}")
 
-    iv = big_endian_to_int(Random.get_random_bytes(16))
+    iv_bytes = Random.get_random_bytes(16)
     encrypt_key = derived_key[:16]
-    ciphertext = encrypt_aes_ctr(private_key, encrypt_key, iv)
+    ciphertext = encrypt_aes_ctr(private_key, encrypt_key, big_endian_to_int(iv_bytes))
     mac = keccak(derived_key[16:32] + ciphertext)
 
     address = keys.PrivateKey(private_key).public_key.to_checksum_address()
@@ -227,7 +226,7 @@ def _create_v3_keyfile_json(
         "crypto": {
             "cipher": "aes-128-ctr",
             "cipherparams": {
-                "iv": encode_hex_no_prefix(int_to_big_endian(iv)),
+                "iv": iv_bytes.hex(),
             },
             "ciphertext": encode_hex_no_prefix(ciphertext),
             "kdf": kdf,
