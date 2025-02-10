@@ -36,7 +36,7 @@ with open("./README.md") as readme:
 setup(
     name="eth-keyfile",
     # *IMPORTANT*: Don't manually change the version here. Use `make bump`, as described in readme
-    version="0.9.0",
+    version="0.9.1",
     description=(
         "eth-keyfile: A library for handling the encrypted keyfiles used to store "
         "ethereum private keys"
