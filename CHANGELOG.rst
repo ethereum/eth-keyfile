@@ -1,3 +1,12 @@
+eth-keyfile v0.9.1 (2025-02-10)
+-------------------------------
+
+Bugfixes
+~~~~~~~~
+
+- Fix bug where ``iv`` value in v3 keyfile could be length less than 32. (`#60 <https://github.com/ethereum/eth-keyfile/issues/60>`__)
+
+
 eth-keyfile v0.9.0 (2025-01-29)
 -------------------------------
 
