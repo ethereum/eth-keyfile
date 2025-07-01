@@ -1,5 +1,78 @@
 # eth-keyfile
+>>> from eth_keyfile import load_keyfile
+>>> load_keyfile('path/to-my-keystore/keystore.json')
+{
+    "crypto" : {
+        "cipher" : "aes-128-ctr",
+        "cipherparams" : {
+            "iv" : "6087dab2f9fdbbfaddc31a909735c1e6"
+        },
+        "ciphertext" : "5318b4d5bcd28de64ee5559e671353e16f075ecae9f99c7a79a38af5f869aa46",
+        "kdf" : "pbkdf2",
+        "kdfparams" : {
+            "c" : 262144,
+            "dklen" : 32,
+            "prf" : "hmac-sha256",
+            "salt" : "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd"
+        },
+        "mac" : "517ead924a9d0dc3124507e3393d175ce3ff7c1e96529c6c555ce9e51205e9b2"
+    },
+    "id" : "3198bc9c-6672-5ab3-d995-4942343ae5b6",
+    "version" : 3
+}>>> private_key = b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
+>>> create_keyfile_json(private_key, b'foo')
+{
+    "address" : "1a642f0e3c3af545e7acbd38b07251b3990914f1",
+    "crypto" : {
+        "cipher" : "aes-128-ctr",
+        "cipherparams" : {
+            "iv" : "6087dab2f9fdbbfaddc31a909735c1e6"
+        },
+        "ciphertext" : "5318b4d5bcd28de64ee5559e671353e16f075ecae9f99c7a79a38af5f869aa46",
+        "kdf" : "pbkdf2",
+        "kdfparams" : {
+            "c" : 262144,
+            "dklen" : 32,
+            "prf" : "hmac-sha256",
+            "salt" : "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd"
+        },
+        "mac" : "517ead924a9d0dc3124507e3393d175ce3ff7c1e96529c6c555ce9e51205e9b2"
+    },
+    "id" : "3198bc9c-6672-5ab3-d995-4942343ae5b6",
+    "version" : 3
+}
 
+>>> create_keyfile_json(private_key, b'foo', version=4)
+ {
+    'crypto': {
+        'checksum': {
+            'function': 'sha256',
+            'message': '66a4883a8017c9ef2854acc0c46af6cc8943de5bcf6bb501a2d6a932a91c5333',
+            'params': {}
+        },
+        'cipher': {
+            'function': 'aes-128-ctr',
+            'message': '584fbbc86d65a92c1e0dfcaa3ba46c4790d31382c5dba25c94acfa2ae6e2687d',
+            'params': {
+                'iv': 'f948a84c4072cc3f38c82f6f672fa8a9'
+            }
+        },
+        'kdf': {
+            'function': 'pbkdf2',
+            'message': '',
+            'params': {
+                'c': 1000000,
+                'dklen': 32,
+                'prf': 'hmac-sha256',
+                'salt': 'd0a1d8a34e7b8bdffbe34e1152ee0bcf3dba64c6e1539cf2bce2ef6995061757'
+            }
+        }
+    },
+    'description': '',
+    'path': '',
+    'pubkey': 'aa1a1c26055a329817a5759d877a2795f9499b97d6056edde0eea39512f24e8bc874b4471f0501127abb1ea0d9f68ac1',
+    'uuid': '92c3f383-e8ea-47a1-a1d7-55adccfae8fe',
+    'version': 4}
 [![Join the conversation on Discord](https://img.shields.io/discord/809793915578089484?color=blue&label=chat&logo=discord&logoColor=white)](https://discord.gg/GHryRvPB84) [![Build Status](https://circleci.com/gh/ethereum/eth-keyfile.svg?style=shield)](https://circleci.com/gh/ethereum/eth-keyfile)
 [![PyPI version](https://badge.fury.io/py/eth-keyfile.svg)](https://badge.fury.io/py/eth-keyfile)
 [![Python versions](https://img.shields.io/pypi/pyversions/eth-keyfile.svg)](https://pypi.python.org/pypi/eth-keyfile)
@@ -17,7 +90,27 @@ View the [change log](https://github.com/ethereum/eth-keyfile/blob/main/CHANGELO
 ```sh
 python -m pip install eth-keyfile
 ```
-
+>>> keyfile_json = {
+...     "crypto" : {
+...         "cipher" : "aes-128-ctr",
+...         "cipherparams" : {
+...             "iv" : "6087dab2f9fdbbfaddc31a909735c1e6"
+...         },
+...         "ciphertext" : "5318b4d5bcd28de64ee5559e671353e16f075ecae9f99c7a79a38af5f869aa46",
+...         "kdf" : "pbkdf2",
+...         "kdfparams" : {
+...             "c" : 262144,
+...             "dklen" : 32,
+...             "prf" : "hmac-sha256",
+...             "salt" : "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd"
+...         },
+...         "mac" : "517ead924a9d0dc3124507e3393d175ce3ff7c1e96529c6c555ce9e51205e9b2"
+...     },
+...     "id" : "3198bc9c-6672-5ab3-d995-4942343ae5b6",
+...     "version" : 3
+... }
+>>> decode_keyfile_json(keyfile_json, b'foo')
+b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
 ## Documentation
 
 ### `eth_keyfile.load_keyfile(path_or_file_obj) --> keyfile_json`
@@ -162,7 +255,8 @@ returning the decoded private key.
 >>> decode_keyfile_json(keyfile_json, b'foo')
 b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
 ```
-
+>>> extract_key_from_keyfile('path/to-my-keystore/keyfile.json', b'foo')
+b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
 ### `eth_keyfile.extract_key_from_keyfile(path_or_file_obj, password) --> private_key`
 
 Takes a filesystem path represented by a string or a file object and the
@@ -172,7 +266,12 @@ password for the keyfile.  Returns the private key as a bytestring.
 >>> extract_key_from_keyfile('path/to-my-keystore/keyfile.json', b'foo')
 b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
 ```
-
+git clone git@github.com:ethereum/eth-keyfile.git
+cd eth-keyfile
+virtualenv -p python3 venv
+. venv/bin/activate
+python -m pip install -e ".[dev]"
+pre-commit install
 ## Developer Setup
 
 If you would like to hack on eth-keyfile, please check out the [Snake Charmers
@@ -208,7 +307,8 @@ To release a new version:
 ```sh
 make release bump=$$VERSION_PART_TO_BUMP$$
 ```
-
+>>> extract_key_from_keyfile('path/to-my-keystore/keyfile.json', b'foo')
+b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
 #### How to bumpversion
 
 The version format for this repo is `{major}.{minor}.{patch}` for stable, and
