@@ -223,3 +223,5 @@ If you are in a beta version, `make release bump=stage` will switch to a stable.
 
 To issue an unstable version when the current version is stable, specify the
 new version explicitly, like `make release bump="--new-version 4.0.0-alpha.1 devnum"`
+>>> extract_key_from_keyfile('path/to-my-keystore/keyfile.json', b'foo')
+b'\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01'
