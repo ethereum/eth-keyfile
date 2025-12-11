@@ -1,6 +1,5 @@
 from typing import (
     Any,
-    Optional,
 )
 
 
@@ -18,12 +17,12 @@ class EthKeyfileException(Exception):
             # deal with other exceptions
     """
 
-    user_message: Optional[str] = None
+    user_message: str | None = None
 
     def __init__(
         self,
         *args: Any,
-        user_message: Optional[str] = None,
+        user_message: str | None = None,
     ):
         super().__init__(*args)
 
