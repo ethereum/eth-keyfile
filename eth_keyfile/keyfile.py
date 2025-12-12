@@ -6,11 +6,8 @@ from typing import (
     IO,
     Any,
     AnyStr,
-    Dict,
     Literal,
-    Optional,
     TypeVar,
-    Union,
     cast,
 )
 from unicodedata import (
@@ -85,7 +82,7 @@ def encode_hex_no_prefix(value: AnyStr) -> HexStr:
     return remove_0x_prefix(encode_hex(value))
 
 
-def load_keyfile(path_or_file_obj: Union[str, IO[str]]) -> Any:
+def load_keyfile(path_or_file_obj: str | IO[str]) -> Any:
     if is_string(path_or_file_obj):
         assert isinstance(path_or_file_obj, str)
         with open(path_or_file_obj) as keyfile_file:
@@ -96,15 +93,15 @@ def load_keyfile(path_or_file_obj: Union[str, IO[str]]) -> Any:
 
 
 def create_keyfile_json(
-    private_key: Union[bytes, bytearray, memoryview],
+    private_key: bytes | bytearray | memoryview,
     password: bytes,
     version: int = 3,
     kdf: KDFType = "pbkdf2",
-    iterations: Optional[int] = None,
-    salt_size: Optional[int] = None,
-    description: Optional[str] = None,
-    path: Optional[str] = None,
-) -> Dict[str, Any]:
+    iterations: int | None = None,
+    salt_size: int | None = None,
+    description: str | None = None,
+    path: str | None = None,
+) -> dict[str, Any]:
     if version == 3:
         return _create_v3_keyfile_json(
             private_key, password, kdf, iterations, salt_size
@@ -117,7 +114,7 @@ def create_keyfile_json(
         raise EthKeyfileNotImplementedError("Not yet implemented")
 
 
-def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: bytes) -> bytes:
+def decode_keyfile_json(raw_keyfile_json: dict[Any, Any], password: bytes) -> bytes:
     keyfile_json = normalize_keys(raw_keyfile_json)
     version = keyfile_json["version"]
 
@@ -129,16 +126,14 @@ def decode_keyfile_json(raw_keyfile_json: Dict[Any, Any], password: bytes) -> by
         raise EthKeyfileNotImplementedError("Not yet implemented")
 
 
-def extract_key_from_keyfile(
-    path_or_file_obj: Union[str, IO[str]], password: bytes
-) -> bytes:
+def extract_key_from_keyfile(path_or_file_obj: str | IO[str], password: bytes) -> bytes:
     keyfile_json = load_keyfile(path_or_file_obj)
     private_key = decode_keyfile_json(keyfile_json, password)
     return private_key
 
 
 @to_dict
-def normalize_keys(keyfile_json: Dict[Any, Any]) -> Any:
+def normalize_keys(keyfile_json: dict[Any, Any]) -> Any:
     for key, value in keyfile_json.items():
         if is_string(key):
             norm_key = key.lower()
@@ -162,12 +157,12 @@ SCRYPT_P = 1
 
 
 def _create_v3_keyfile_json(
-    private_key: Union[bytes, bytearray, memoryview],
+    private_key: bytes | bytearray | memoryview,
     password: bytes,
     kdf: KDFType,
-    work_factor: Optional[int] = None,
-    salt_size: Optional[int] = None,
-) -> Dict[str, Any]:
+    work_factor: int | None = None,
+    salt_size: int | None = None,
+) -> dict[str, Any]:
     if work_factor is None:
         work_factor = get_default_work_factor_for_kdf(kdf)
     if salt_size is None:
@@ -241,7 +236,7 @@ def _create_v3_keyfile_json(
 #
 # Verson 3 decoder
 #
-def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: bytes) -> bytes:
+def _decode_keyfile_json_v3(keyfile_json: dict[str, Any], password: bytes) -> bytes:
     crypto = keyfile_json["crypto"]
     kdf = crypto["kdf"]
 
@@ -280,14 +275,14 @@ def _decode_keyfile_json_v3(keyfile_json: Dict[str, Any], password: bytes) -> by
 
 
 def _create_v4_keyfile_json(
-    private_key: Union[bytes, bytearray, memoryview],
+    private_key: bytes | bytearray | memoryview,
     password: bytes,
     kdf: KDFType,
-    work_factor: Optional[int] = None,
-    salt_size: Optional[int] = None,
-    description: Optional[str] = None,
-    path: Optional[str] = None,
-) -> Dict[str, Any]:
+    work_factor: int | None = None,
+    salt_size: int | None = None,
+    description: str | None = None,
+    path: str | None = None,
+) -> dict[str, Any]:
     if work_factor is None:
         work_factor = get_default_work_factor_for_kdf(kdf)
     if salt_size is None:
@@ -389,7 +384,7 @@ def _create_v4_keyfile_json(
 #
 # Version 4 decoder
 #
-def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: bytes) -> bytes:
+def _decode_keyfile_json_v4(keyfile_json: dict[str, Any], password: bytes) -> bytes:
     crypto = keyfile_json["crypto"]
     kdf = crypto["kdf"]["function"]
 
@@ -425,7 +420,7 @@ def _decode_keyfile_json_v4(keyfile_json: Dict[str, Any], password: bytes) -> by
 #
 # Key derivation
 #
-def _derive_pbkdf_key(kdf_params: Dict[str, Any], password: bytes) -> bytes:
+def _derive_pbkdf_key(kdf_params: dict[str, Any], password: bytes) -> bytes:
     salt = decode_hex(kdf_params["salt"])
     dklen = kdf_params["dklen"]
     should_be_hmac, _, hash_name = kdf_params["prf"].partition("-")
@@ -437,7 +432,7 @@ def _derive_pbkdf_key(kdf_params: Dict[str, Any], password: bytes) -> bytes:
     return derive_pbkdf_key
 
 
-def _derive_scrypt_key(kdf_params: Dict[str, Any], password: bytes) -> bytes:
+def _derive_scrypt_key(kdf_params: dict[str, Any], password: bytes) -> bytes:
     salt = decode_hex(kdf_params["salt"])
     p = kdf_params["p"]
     r = kdf_params["r"]
@@ -497,7 +492,7 @@ def decrypt_aes_ctr(ciphertext: bytes, key: bytes, iv: int) -> bytes:
 
 
 def encrypt_aes_ctr(
-    value: Union[bytes, bytearray, memoryview], key: bytes, iv: int
+    value: bytes | bytearray | memoryview, key: bytes, iv: int
 ) -> bytes:
     ctr = Counter.new(128, initial_value=iv, allow_wraparound=True)
     encryptor = AES.new(key, AES.MODE_CTR, counter=ctr)
