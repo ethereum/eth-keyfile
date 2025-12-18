@@ -1,3 +1,18 @@
+eth-keyfile v0.10.0-beta.1 (2025-12-18)
+---------------------------------------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~
+
+- Drop support for Python 3.8 and 3.9. (`#65 <https://github.com/ethereum/eth-keyfile/issues/65>`__)
+
+
+Features
+~~~~~~~~
+
+- Add support for Python 3.14 (`#65 <https://github.com/ethereum/eth-keyfile/issues/65>`__)
+
+
 eth-keyfile v0.9.1 (2025-02-10)
 -------------------------------
 
